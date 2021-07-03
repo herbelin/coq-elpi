@@ -573,12 +573,6 @@ let implicit_kind : Glob_term.binding_kind Conv.t = let open Conv in let open AP
   ]
 } |> CConv.(!<)
 
-let implicit_kind_of_status = function
-  | None -> Glob_term.Explicit
-  | Some (_,_,(maximal,_)) ->
-      if maximal then Glob_term.MaxImplicit else Glob_term.NonMaxImplicit
-
-
 let simplification_strategy = let open API.AlgebraicData in let open Reductionops.ReductionBehaviour in declare {
   ty = Conv.TyName "simplification_strategy";
   doc = "Strategy for simplification tactics";
@@ -1045,7 +1039,7 @@ It's a fatal error if Name cannot be located.|})),
      let mind, indbo = lookup_inductive env i in
      let knames = CList.(init Declarations.(indbo.mind_nb_constant + indbo.mind_nb_args) (fun k -> GlobRef.ConstructRef(i,k+1))) in
      let k_impls = List.map (fun x -> Impargs.extract_impargs_data (Impargs.implicits_of_global x)) knames in
-     let hd x = match x with [] -> [] | (_,x) :: _ -> List.map implicit_kind_of_status x in
+     let hd x = match x with [] -> [] | (_,x) :: _ -> List.map Impargs.binding_kind_of_status x in
      let k_impls = List.map hd k_impls in
      let i_impls = Impargs.extract_impargs_data @@ Impargs.implicits_of_global (GlobRef.IndRef i) in
      let i_impls = hd i_impls in
@@ -1727,7 +1721,7 @@ NParams can always be omitted, since it is inferred.
     Out(list (list implicit_kind),"Imps",
     Easy "reads the implicit arguments declarations associated to a global reference. See also the [] and {} flags for the Arguments command.")),
   (fun gref _ ~depth ->
-    !: (List.map (fun (_,x) -> List.map implicit_kind_of_status x)
+    !: (List.map (fun (_,x) -> List.map Impargs.binding_kind_of_status x)
           (Impargs.extract_impargs_data (Impargs.implicits_of_global gref))))),
   DocAbove);
 

@@ -2270,7 +2270,7 @@ Supported attributes:
     Out(option simplification_strategy,"Strategy",
     Easy "reads the behavior of the simplification tactics. Positions are 0 based. See also the ! and / modifiers for the Arguments command")),
   (fun gref _ ~depth ->
-     !: (Reductionops.ReductionBehaviour.get gref))),
+     !: (Reductionops.ReductionBehaviour.get (gref (table ()))))),
   DocAbove);
 
   MLCode(Pred("coq.arguments.set-simplification",
